@@ -7,6 +7,7 @@ import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
@@ -32,11 +33,12 @@ import java.util.Optional;
 
 public class MovieController {
 
-    private final MovieRepository movieRepository;
+    @Autowired
+    private MovieRepository movieRepository;
 
-    public MovieController(MovieRepository movieRepository) {
-        this.movieRepository = movieRepository;
-    }
+//    public MovieController(MovieRepository movieRepository) {
+//        this.movieRepository = movieRepository;
+//    }
 
 //    private List<Movie> movies = new ArrayList<>();
 //
@@ -53,23 +55,23 @@ public class MovieController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Movie createMovie(@RequestBody Movie movie) {
-        return movieRepository.saveAndFlush(movie);
+                return movieRepository.saveAndFlush(movie);
     }
 
     @PutMapping(value = "/{id")
     public Movie updateMovie(@PathVariable int id,  @RequestBody Movie movie) {
-    final Optional<Movie> movieOptional = movieRepository.findById(id);
-    if (movieOptional.isPresent()) {
-        throw new IllegalArgumentException("No movie with such id: " +  id);
-            }
-    movie.setId(id);
-       return movieRepository.saveAndFlush(movie);
+    if (movieRepository.existsById(id)) {
+        movie.setId(id);
+      return   movieRepository.saveAndFlush(movie);
+    } else {
+        throw new IllegalArgumentException("No movie with such id: " + id);
+        }
     }
 
     @DeleteMapping(value = "/id")
         public void deleteMovie(@PathVariable int id) {
         movieRepository.deleteById(id);
     }
-
 }
