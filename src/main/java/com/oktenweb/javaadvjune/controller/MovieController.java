@@ -2,6 +2,7 @@ package com.oktenweb.javaadvjune.controller;
 
 import com.oktenweb.javaadvjune.dao.MovieRepository;
 import com.oktenweb.javaadvjune.entity.Movie;
+import com.oktenweb.javaadvjune.service.IMovieService;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +36,7 @@ import java.util.Optional;
 public class MovieController {
 
     @Autowired
-    private MovieRepository movieRepository;
+    private IMovieService movieService;
 
 //    public MovieController(MovieRepository movieRepository) {
 //        this.movieRepository = movieRepository;
@@ -51,27 +53,28 @@ public class MovieController {
 
     @GetMapping
     public List<Movie> getAllMovies() {
-        return movieRepository.findAll();
+        return movieService.getAllMovies();
+    }
+
+    @GetMapping("/movie")
+    public Movie getMovie(@RequestParam int id) {
+        return movieService.getMovieById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Movie createMovie(@RequestBody Movie movie) {
-                return movieRepository.saveAndFlush(movie);
+    public Movie createMovie(@RequestBody @Valid Movie movie) {
+                return movieService.saveMovie(movie);
     }
 
     @PutMapping(value = "/{id")
     public Movie updateMovie(@PathVariable int id,  @RequestBody Movie movie) {
-    if (movieRepository.existsById(id)) {
-        movie.setId(id);
-      return   movieRepository.saveAndFlush(movie);
-    } else {
-        throw new IllegalArgumentException("No movie with such id: " + id);
-        }
+        return movieService.updateMovie(id, movie);
     }
 
     @DeleteMapping(value = "/id")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
         public void deleteMovie(@PathVariable int id) {
-        movieRepository.deleteById(id);
+            movieService.deleteMovie(id);
     }
 }
