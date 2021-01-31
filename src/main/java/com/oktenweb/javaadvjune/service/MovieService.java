@@ -48,7 +48,8 @@ public class MovieService implements IMovieService{
 
     @Override
     public Movie updateMovie(int id, Movie movie) {
-        if (movieRepository.existsById(id)) {
+
+         if (movieRepository.existsById(id)) {
             movie.setId(id);
             return   movieRepository.saveAndFlush(movie);
         } else {

@@ -3,6 +3,7 @@ package com.oktenweb.javaadvjune.controller;
 import com.oktenweb.javaadvjune.dao.MovieRepository;
 import com.oktenweb.javaadvjune.entity.Movie;
 import com.oktenweb.javaadvjune.service.IMovieService;
+import com.oktenweb.javaadvjune.validation.MovieValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -76,5 +78,10 @@ public class MovieController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
         public void deleteMovie(@PathVariable int id) {
             movieService.deleteMovie(id);
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder webDataBinder) {
+        webDataBinder.addValidators(new MovieValidator());
     }
 }
